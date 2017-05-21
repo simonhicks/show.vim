@@ -23,6 +23,12 @@ function! s:create_buffer(buffer_name)
 	setlocal nomodifiable
 endfunction
 
+function! s:goto_buffer(bnum)
+  while bufnr('%') != a:bnum
+    execute "norm! "
+  endwhile
+endfunction
+
 function! s:open_buffer(buffer_name)
 	let bnum = bufnr(a:buffer_name)
 	if bnum == -1
@@ -31,9 +37,7 @@ function! s:open_buffer(buffer_name)
 		if s:is_visible(bnum) == 0
 			execute "sbuffer " . bnum
 		else
-			while bufnr('%') != bnum
-				execute "norm! "
-			endwhile
+      call s:goto_buffer(bnum)
 		endif
 	endif
 endfunction
@@ -46,9 +50,12 @@ endfunction
 " @arg  content      A list of strings to display in that buffer (one string
 "                    per line).
 function! show#show(buffer_name, content)
+  let bnum = bufnr('%')
 	call s:open_buffer(a:buffer_name)
 	setlocal modifiable
 	normal! ggVGd
 	call append(0, a:content)
 	setlocal nomodifiable
+  1
+  call s:goto_buffer(bnum)
 endfunction
